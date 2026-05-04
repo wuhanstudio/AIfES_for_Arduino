@@ -273,12 +273,16 @@ See the license headers in the source files for more details.
 If you use this project in your research, please cite:
 
 ```bibtex
-@misc{aifes_flower_gesture,
-  title={AIfES x Flower: Federated Learning for Gesture Recognition on Embedded Devices},
-  author={Fraunhofer Institute for Microelectronic Circuits and Systems},
-  year={2026},
-  howpublished={\url{https://flower.ai/apps/fraunhofer-ims/aifes-gesture-recognition/}}
-}
+@ARTICLE{10403985,
+  author={Wulfert, Lars and Kühnel, Johannes and Krupp, Lukas and Viga, Justus and Wiede, Christian and Gembaczka, Pierre and Grabmaier, Anton},
+  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence}, 
+  title={AIfES: A Next-Generation Edge AI Framework}, 
+  year={2024},
+  volume={},
+  number={},
+  pages={1-16},
+  keywords={Training;Data models;Artificial intelligence;Support vector machines;Hardware acceleration;Libraries;Performance evaluation;Machine Learning Framework;Edge AI Framework;On-Device Training;Embedded Systems;Resource-Constrained Devices;TinyML},
+  doi={10.1109/TPAMI.2024.3355495}}
 ```
 
 
