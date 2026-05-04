@@ -1,0 +1,16 @@
+[project]
+name = "aifes-gesture-recognition" # REQUIRED
+version = "0.0.4" # REQUIRED
+description = "This repository shows how AIfES and Flower can be combined." 
+license = "AGPL-3.0 license "
+requires-python = ">=3.10"
+dependencies = [
+    "loguru~=0.7.3",
+    "flwr[simulation]>=1.24.0",
+    "flwr-datasets[vision]>=0.5.0",
+    "torch==2.8.0",
+    "torchvision==0.23.0",
+]
+ 
+[tool.flwr.app]
+publisher = "fraunhofer-ims"  # REQUIRED - the account name under which the application is published
