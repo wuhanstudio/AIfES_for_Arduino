@@ -25,7 +25,7 @@ else()
     )
 endif()
 
-set (APP_MAIN aifes_xor_inference)
+set (APP_MAIN aifes_cnn_training)
 set (AIfES_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../src)
 #
 # Add modules
@@ -70,6 +70,8 @@ target_link_libraries(${APP_MAIN} PRIVATE
     aifes_base
     aifes_default
     aifes_express
+    aifes_cnn_base
+    aifes_cnn_default
 )
 
 #
