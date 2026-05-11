@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 3.15)
 project(AIfES_Linux LANGUAGES C CXX)
 
 set(CMAKE_C_STANDARD 99)
-set(CMAKE_CXX_STANDARD 17)
+
+add_definitions( -DAIDEBUG_ENABLE_PRINTING)
 
 #
 # Enable warnings
@@ -15,7 +16,12 @@ else()
     add_compile_options(
         -Wall
         -Wextra
-        -Wpedantic
+        -Wno-pedantic
+        -Wno-unused-parameter
+        -Wno-maybe-uninitialized
+        -Wno-sign-compare
+        -Wno-missing-field-initializers
+        -Wno-absolute-value
     )
 endif()
 
@@ -39,8 +45,8 @@ add_subdirectory(${AIfES_ROOT_DIR}/cnn ${AIfES_CNN_BINARY_DIR})
 #
 
 add_executable(aifes_xor_inference
-    main.cpp
-    # aifes_config.cpp
+    main.c
+    ${AIfES_ROOT_DIR}/aifes_config.c
 )
 
 #

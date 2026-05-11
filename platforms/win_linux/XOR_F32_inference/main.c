@@ -1,20 +1,16 @@
-#include <iostream>
-#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
 
-extern "C" {
 #include "aifes.h"
-}
 
-int main()
+int main(void)
 {
-    std::cout << "AIfES XOR inference demo (Linux)" << std::endl;
+    printf("AIfES XOR inference demo (Linux)\n");
 
     //
     // Input tensor
     //
-
     float input_data[] = {0.0f, 1.0f};
-
     uint16_t input_shape[] = {1, 2};
 
     aitensor_t input_tensor =
@@ -23,7 +19,6 @@ int main()
     //
     // Input layer
     //
-
     uint16_t input_layer_shape[] = {1, 2};
 
     ailayer_input_f32_t input_layer =
@@ -34,14 +29,10 @@ int main()
     //
     // Dense layer 1
     //
-
     float weights_data_dense_1[] = {
-        -10.1164f,
-        -8.4212f,
-         5.4396f,
-         7.2970f,
-        -7.6482f,
-        -9.0155f
+        -10.1164f, -8.4212f,
+         5.4396f,  7.2970f,
+        -7.6482f, -9.0155f
     };
 
     float bias_data_dense_1[] = {
@@ -59,14 +50,12 @@ int main()
     //
     // Sigmoid 1
     //
-
     ailayer_sigmoid_f32_t sigmoid_layer_1 =
         AILAYER_SIGMOID_F32_M();
 
     //
     // Dense layer 2
     //
-
     float weights_data_dense_2[] = {
         12.0305f,
         -6.5858f,
@@ -86,16 +75,14 @@ int main()
     //
     // Sigmoid 2
     //
-
     ailayer_sigmoid_f32_t sigmoid_layer_2 =
         AILAYER_SIGMOID_F32_M();
 
     //
     // Model definition
     //
-
     aimodel_t model;
-    ailayer_t* x;
+    ailayer_t *x;
 
     model.input_layer =
         ailayer_input_f32_default(&input_layer);
@@ -120,29 +107,30 @@ int main()
     //
     // Compile model
     //
-
     aialgo_compile_model(&model);
 
     //
     // Print structure
     //
-
-    std::cout << "\nModel structure:\n";
+    printf("\nModel structure:\n");
     aialgo_print_model_structure(&model);
 
     //
     // Allocate inference memory
     //
-
     uint32_t memory_size =
         aialgo_sizeof_inference_memory(&model);
 
-    std::cout << "\nInference memory: "
-              << memory_size
-              << " bytes\n";
+    printf("\nInference memory: %u bytes\n", memory_size);
 
-    uint8_t* memory_ptr =
-        static_cast<uint8_t*>(malloc(memory_size));
+    uint8_t *memory_ptr =
+        (uint8_t *)malloc(memory_size);
+
+    if (memory_ptr == NULL)
+    {
+        printf("Memory allocation failed\n");
+        return 1;
+    }
 
     aialgo_schedule_inference_memory(
         &model,
@@ -152,9 +140,7 @@ int main()
     //
     // Output tensor
     //
-
     uint16_t output_shape[] = {1, 1};
-
     float output_data[1];
 
     aitensor_t output_tensor =
@@ -163,7 +149,6 @@ int main()
     //
     // Run inference
     //
-
     aialgo_inference_model(
         &model,
         &input_tensor,
@@ -172,17 +157,10 @@ int main()
     //
     // Print result
     //
-
-    std::cout << "\nResults:\n";
-
-    std::cout
-        << "Input 1: "
-        << input_data[0]
-        << "\nInput 2: "
-        << input_data[1]
-        << "\nOutput  : "
-        << ((float*)output_tensor.data)[0]
-        << "\n";
+    printf("\nResults:\n");
+    printf("Input 1: %f\n", input_data[0]);
+    printf("Input 2: %f\n", input_data[1]);
+    printf("Output  : %f\n", ((float *)output_tensor.data)[0]);
 
     free(memory_ptr);
 
