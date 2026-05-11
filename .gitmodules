@@ -1,0 +1,3 @@
+[submodule "platforms/win_linux/MNIST_Training_FP32/mnist"]
+	path = platforms/win_linux/MNIST_Training_FP32/mnist
+	url = https://github.com/wuhanstudio/mnist
