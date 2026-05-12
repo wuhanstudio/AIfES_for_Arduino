@@ -27,6 +27,7 @@ endif()
 
 set (APP_MAIN aifes_xor_inference)
 set (AIfES_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../src)
+
 #
 # Add modules
 #
