@@ -18,7 +18,7 @@
 #include <aifes.h>
 
 #define TRAIN_SAMPLES 10
-#define BATCH_SIZE 1
+#define BATCH_SIZE 5
 
 #define IMG_SIZE (28 * 28)
 #define NUM_CLASSES 10
@@ -78,8 +78,48 @@ void mnist_print_img(const float *buf) {
 }
 
 // ------------------------------------------------------------
+// GLOBAL DATA BUFFERS
+// ------------------------------------------------------------
+
+static float input_data[TRAIN_SAMPLES * IMG_SIZE];
+static float target_data[TRAIN_SAMPLES * NUM_CLASSES];
+
+// ------------------------------------------------------------
+// GLOBAL AIfES OBJECTS
+// ------------------------------------------------------------
+
+static aimodel_t model;
+
+static ailayer_input_f32_t input_layer;
+
+static ailayer_conv2d_t conv1;
+static ailayer_relu_f32_t relu1;
+static ailayer_maxpool2d_t pool1;
+
+static ailayer_conv2d_t conv2;
+static ailayer_relu_f32_t relu2;
+static ailayer_maxpool2d_t pool2;
+
+static ailayer_flatten_t flatten;
+static ailayer_dense_f32_t dense;
+static ailayer_softmax_f32_t softmax;
+
+static ailoss_crossentropy_f32_t loss_fn;
+
+static aiopti_adam_f32_t adam;
+
+// ------------------------------------------------------------
+// GLOBAL MEMORY POINTERS
+// ------------------------------------------------------------
+
+static void *param_mem = NULL;
+static void *train_mem = NULL;
+
+// ------------------------------------------------------------
 // SETUP
 // ------------------------------------------------------------
+
+SET_LOOP_TASK_STACK_SIZE(32 * 1024);
 
 void setup() {
   Serial.begin(115200);
@@ -92,9 +132,8 @@ void setup() {
 
   srand(1);
 
-  float* input_data = (float*)malloc(TRAIN_SAMPLES * IMG_SIZE * sizeof(float));
-
-  float* target_data = (float*)malloc(TRAIN_SAMPLES * NUM_CLASSES * sizeof(float));
+  // float* input_data = (float*)malloc(TRAIN_SAMPLES * IMG_SIZE * sizeof(float));
+  // float* target_data = (float*)malloc(TRAIN_SAMPLES * NUM_CLASSES * sizeof(float));
 
   // --------------------------------------------------------
   // INPUT DATA
@@ -121,20 +160,23 @@ void setup() {
   // PRINT DATASET
   // --------------------------------------------------------
 
-  for (int i = 0; i < TRAIN_SAMPLES; i++) {
-    Serial.println();
-    Serial.print("--- Image ");
-    Serial.print(i);
-    Serial.println(" ---");
+  // for (int i = 0; i < TRAIN_SAMPLES; i++) {
+  //   Serial.println();
+  //   Serial.print("--- Image ");
+  //   Serial.print(i);
+  //   Serial.println(" ---");
 
-    mnist_print_img(
-      &input_data[i * IMG_SIZE]);
+  //   mnist_print_img(
+  //     &input_data[i * IMG_SIZE]);
 
-    Serial.print("Label: ");
-    Serial.println(mnist_labels[i]);
-  }
+  //   Serial.print("Label: ");
+  //   Serial.println(mnist_labels[i]);
+  // }
 
-  // --------------------------------------------------------
+}
+
+void loop() {
+ // --------------------------------------------------------
   // TENSORS
   // --------------------------------------------------------
 
@@ -171,12 +213,12 @@ void setup() {
     28
   };
 
-  ailayer_input_f32_t input_layer =
+  input_layer =
     AILAYER_INPUT_F32_A(
       4,
       input_layer_shape);
 
-  ailayer_conv2d_t conv1 =
+  conv1 =
     AILAYER_CONV2D_F32_A(
       4,
       HW(3, 3),
@@ -184,16 +226,16 @@ void setup() {
       HW(1, 1),
       HW(0, 0));
 
-  ailayer_relu_f32_t relu1 =
+  relu1 =
     AILAYER_RELU_F32_A();
 
-  ailayer_maxpool2d_t pool1 =
+  pool1 =
     AILAYER_MAXPOOL2D_F32_A(
       HW(2, 2),
       HW(2, 2),
       HW(0, 0));
 
-  ailayer_conv2d_t conv2 =
+  conv2 =
     AILAYER_CONV2D_F32_A(
       8,
       HW(3, 3),
@@ -201,32 +243,28 @@ void setup() {
       HW(1, 1),
       HW(0, 0));
 
-  ailayer_relu_f32_t relu2 =
+  relu2 =
     AILAYER_RELU_F32_A();
 
-  ailayer_maxpool2d_t pool2 =
+  pool2 =
     AILAYER_MAXPOOL2D_F32_A(
       HW(2, 2),
       HW(2, 2),
       HW(0, 0));
 
-  ailayer_flatten_t flatten =
+  flatten =
     AILAYER_FLATTEN_F32_A();
 
-  ailayer_dense_f32_t dense =
+  dense =
     AILAYER_DENSE_F32_A(
       NUM_CLASSES);
 
-  ailayer_softmax_f32_t softmax =
+  softmax =
     AILAYER_SOFTMAX_F32_A();
-
-  ailoss_crossentropy_f32_t loss_fn;
 
   // --------------------------------------------------------
   // COMPILE MODEL
   // --------------------------------------------------------
-
-  aimodel_t model;
 
   ailayer_t *x;
 
@@ -283,10 +321,10 @@ void setup() {
   Serial.println("--- Model Compiled ---");
 
 
-	// ------------------------------------- Print the model structure ------------------------------------
+  // ------------------------------------- Print the model structure ------------------------------------
 
   Serial.print("-------------- Model structure ---------------\n");
-	aialgo_print_model_structure(&model);
+  aialgo_print_model_structure(&model);
   Serial.print("----------------------------------------------\n\n");
 
   // --------------------------------------------------------
@@ -301,7 +339,7 @@ void setup() {
   Serial.print(param_size);
   Serial.println(" bytes");
 
-  void *param_mem =
+  param_mem =
     malloc(param_size);
 
   if (param_mem == NULL) {
@@ -470,8 +508,5 @@ void setup() {
 
   Serial.println();
   Serial.println("Done.");
-}
-
-void loop() {
-  // Nothing here
+  while(1);
 }
