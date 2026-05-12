@@ -18,7 +18,7 @@
 
 #include "logging.h"
 
-#define BATCH_SIZE 20
+#define BATCH_SIZE 5
 #define IMG_SIZE (28 * 28)
 #define NUM_CLASSES 10
 
@@ -331,7 +331,7 @@ int main(void)
 
     float loss;
 
-    for (int e = 0; e < 50; e++) {
+    for (int e = 0; e < 10; e++) {
 
         aialgo_train_model(
             &model,
