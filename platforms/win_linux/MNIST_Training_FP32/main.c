@@ -22,8 +22,8 @@
 #define IMG_SIZE (28 * 28)
 #define NUM_CLASSES 10
 
-#define MNIST_TRAIN_IMG_COUNT 6000
-#define MNIST_TEST_IMG_COUNT  1000
+#define MNIST_TRAIN_IMG_COUNT 60000
+#define MNIST_TEST_IMG_COUNT  10000
 
 #define DISK_MOUNT_PT "./mnist"
 #define MNIST_TRAIN_IMG_PATH DISK_MOUNT_PT"/train-images-idx3-ubyte"
@@ -331,7 +331,7 @@ int main(void)
 
     float loss;
 
-    for (int e = 0; e < 20; e++) {
+    for (int e = 0; e < 50; e++) {
 
         aialgo_train_model(
             &model,
