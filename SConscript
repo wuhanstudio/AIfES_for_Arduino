@@ -33,6 +33,11 @@ if GetDepend('AIFES_USING_XOR_INFERENCE_F32_EXAMPLE'):
     path   += [cwd + '/platforms/rt-thread/xor_inference_f32_example']
     src    += Glob('platforms/rt-thread/xor_inference_f32_example/*.c')
 
+# XOR training example
+if GetDepend('AIFES_USING_XOR_TRAINING_F32_EXAMPLE'):
+    path   += [cwd + '/platforms/rt-thread/xor_training_f32_example']
+    src    += Glob('platforms/rt-thread/xor_training_f32_example/*.c')
+
 group = DefineGroup('aifes', src, depend = ['PKG_USING_AIFES'], CPPPATH = path, LOCAL_CCFLAGS = LOCAL_CCFLAGS)
 
 Return('group')
