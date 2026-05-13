@@ -38,6 +38,16 @@ if GetDepend('AIFES_USING_XOR_TRAINING_F32_EXAMPLE'):
     path   += [cwd + '/platforms/rt-thread/xor_training_f32_example']
     src    += Glob('platforms/rt-thread/xor_training_f32_example/*.c')
 
+# CNN training example
+if GetDepend('AIFES_USING_CNN_TRAINING_F32_EXAMPLE'):
+    src    += Glob('src/cnn/base/ailayer/*.c')
+    src    += Glob('src/cnn/base/aimath/*.c')
+    src    += Glob('src/cnn/default/ailayer/*.c')
+    src    += Glob('src/cnn/default/aimath/*.c')
+
+    path   += [cwd + '/platforms/rt-thread/cnn_training_f32_example']
+    src    += Glob('platforms/rt-thread/cnn_training_f32_example/*.c')
+
 group = DefineGroup('aifes', src, depend = ['PKG_USING_AIFES'], CPPPATH = path, LOCAL_CCFLAGS = LOCAL_CCFLAGS)
 
 Return('group')
