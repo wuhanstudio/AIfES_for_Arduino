@@ -48,6 +48,11 @@ if GetDepend('AIFES_USING_CNN_TRAINING_F32_EXAMPLE'):
     path   += [cwd + '/platforms/rt-thread/cnn_training_f32_example']
     src    += Glob('platforms/rt-thread/cnn_training_f32_example/*.c')
 
+# MNIST training example
+if GetDepend('AIFES_USING_MNIST_TRAINING_F32_EXAMPLE'):
+    path   += [cwd + '/platforms/rt-thread/mnist_training_f32_example']
+    src    += Glob('platforms/rt-thread/mnist_training_f32_example/*.c')
+
 group = DefineGroup('aifes', src, depend = ['PKG_USING_AIFES'], CPPPATH = path, LOCAL_CCFLAGS = LOCAL_CCFLAGS)
 
 Return('group')
