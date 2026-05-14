@@ -1,9 +1,10 @@
+#include <rtthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "aifes.h"
 
-void xor_inference_f32(void)
+static int aifes_xor_inference_f32(int argc, char* argv[])
 {
     printf("AIfES XOR inference demo (Zephyr)\n");
 
@@ -129,7 +130,7 @@ void xor_inference_f32(void)
     if (memory_ptr == NULL)
     {
         printf("Memory allocation failed\n");
-        return;
+        return -1;
     }
 
     aialgo_schedule_inference_memory(
@@ -164,6 +165,6 @@ void xor_inference_f32(void)
 
     free(memory_ptr);
 
-    return;
+    return 0;
 }
 MSH_CMD_EXPORT(aifes_xor_inference_f32, AIfES XOR inference demo (F32));
