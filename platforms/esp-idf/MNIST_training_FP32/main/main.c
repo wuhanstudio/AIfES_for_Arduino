@@ -20,8 +20,8 @@
 #include "aifes.h"
 // #include "logging.h"
 
-#define TRAIN_SAMPLES 10
-#define BATCH_SIZE 1
+#define TRAIN_SAMPLES 5
+#define BATCH_SIZE 5
 
 #define IMG_SIZE (28 * 28)
 #define NUM_CLASSES 10
@@ -51,7 +51,7 @@ static const uint8_t mnist_images[][IMG_SIZE] = {
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,36,125,221,254,255,167,109,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,137,249,253,253,253,253,253,221,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,138,251,253,253,170,116,180,253,220,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,85,250,253,224,48,5,22,208,253,220,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,209,253,172,45,0,0,53,253,253,220,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,36,233,253,45,0,0,22,192,253,253,220,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,15,226,253,45,0,0,170,253,209,253,220,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,222,253,176,79,179,242,210,167,253,220,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,92,242,253,253,253,237,77,176,253,220,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,160,242,253,236,78,0,176,253,221,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,53,65,48,0,0,176,253,220,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,192,253,220,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,43,239,253,221,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,176,253,220,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,176,253,220,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,176,253,221,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,176,253,221,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,103,253,220,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,45,251,221,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,169,153,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 };
 
-static const uint8_t mnist_labels[TRAIN_SAMPLES] =
+static const uint8_t mnist_labels[10] =
 {
     0, 1, 2, 3, 4,
     5, 6, 7, 8, 9
@@ -375,17 +375,20 @@ void app_main(void)
     printf("\nStart training...\n");
 
     float loss;
-
+    
+    TickType_t total_ticks = 0;
     for (int e = 0; e < 10; e++)
     {
+        TickType_t start = xTaskGetTickCount();
         aialgo_train_model(
             &model,
             &input_tensor,
             &target_tensor,
             opt,
             BATCH_SIZE);
-            
-        vTaskDelay(pdMS_TO_TICKS(10));
+
+        TickType_t epoch_ticks = xTaskGetTickCount() - start;
+        total_ticks += epoch_ticks;
 
         aialgo_calc_loss_model_f32(
             &model,
@@ -393,10 +396,20 @@ void app_main(void)
             &target_tensor,
             &loss);
 
-        printf("Epoch %d loss = %f\n",
-               e,
-               loss);
+        float epoch_ms =
+            (float)epoch_ticks * 1000.0f / configTICK_RATE_HZ;
+
+        printf("Epoch %d loss = %f time = %.2f ms\n",
+            e,
+            loss,
+            epoch_ms);
+
+        // Delay to allow other tasks to run and to avoid watchdog timer reset
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
+
+    float avg_ms = ((float)total_ticks * 1000.0f / configTICK_RATE_HZ) / 10.0f;
+    printf("Average epoch time = %.2f ms\n", avg_ms);
 
     // --------------------------------------------------------
     // INFERENCE
@@ -432,10 +445,14 @@ void app_main(void)
 
     mnist_print_img(&input_data[0]);
 
+    TickType_t start = xTaskGetTickCount();
     aialgo_inference_model(
         &model,
         &test_tensor,
         &output_tensor);
+    TickType_t inference_ticks = xTaskGetTickCount() - start;
+    float inference_ms = (float)inference_ticks * 1000.0f / configTICK_RATE_HZ;
+    printf("Inference time = %.2f ms\n", inference_ms);
 
     printf("\nOutput probabilities:\n");
 
